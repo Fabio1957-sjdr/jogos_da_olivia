@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Jogo das Cores</title>
+  <title>Color Play</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     html, body { width:100%; height:100%; overflow:hidden; background:#1a1a2e; }
@@ -66,13 +66,13 @@
     <div class="paleta" id="paleta"></div>
   </div>
 
-  <button class="btn-apagar" id="btnApagar">🗑 Apagar</button>
+  <button class="btn-apagar" id="btnApagar">🗑 Clear</button>
 
   <script>
     /* ── Canvas setup ────────────────────────────────────────── */
     const canvas = document.getElementById('canvas');
     const ctx    = canvas.getContext('2d');
-    const RAIO   = 24;
+    const RAIO   = 6;
 
     function ajustar() {
       canvas.width  = window.innerWidth;
