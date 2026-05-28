@@ -383,6 +383,10 @@
     /* ── Audio ───────────────────────────────────────── */
     const audio = new (window.AudioContext || window.webkitAudioContext)();
 
+    /* "Achou!" voice clip */
+    const achouAudio = new Audio('achou.mp4');
+    achouAudio.load();
+
     function playWrong() {
       if (audio.state === 'suspended') audio.resume();
       const t = audio.currentTime;
@@ -397,17 +401,8 @@
     }
 
     function playFound() {
-      if (audio.state === 'suspended') audio.resume();
-      [523, 659, 784, 1047].forEach((f, i) => {
-        const t = audio.currentTime + i * 0.13;
-        const osc = audio.createOscillator();
-        const g   = audio.createGain();
-        osc.connect(g); g.connect(audio.destination);
-        osc.type = 'triangle'; osc.frequency.value = f;
-        g.gain.setValueAtTime(0.3, t);
-        g.gain.exponentialRampToValueAtTime(0.001, t + 0.55);
-        osc.start(t); osc.stop(t + 0.55);
-      });
+      achouAudio.currentTime = 0;
+      achouAudio.play().catch(() => {});
     }
 
     /* ── Confetti ────────────────────────────────────── */
