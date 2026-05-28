@@ -4,157 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <title>Toque e Apareça!</title>
+  <title>Jogos da Olívia</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
-
     body {
-      width:100vw; height:100vh;
-      overflow:hidden;
-      background: linear-gradient(135deg, #a8edea, #fed6e3);
-      transition: background 0.5s ease;
-      -webkit-tap-highlight-color: transparent;
+      width:100vw; min-height:100vh;
+      background:linear-gradient(135deg,#667eea,#764ba2);
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      font-family:'Arial Rounded MT Bold',Arial,sans-serif;
+      -webkit-tap-highlight-color:transparent;
+      padding:30px 20px;
     }
-
-    .dica {
-      position:fixed;
-      bottom:40px; width:100%;
-      text-align:center;
-      font-family:'Arial Rounded MT Bold', Arial, sans-serif;
-      font-size:1.6rem;
-      color:rgba(255,255,255,0.95);
-      text-shadow:0 2px 10px rgba(0,0,0,0.2);
-      pointer-events:none;
-      animation: piscar 1.8s ease-in-out infinite;
-      transition: opacity 0.5s;
+    h1 {
+      color:white; font-size:2.2rem;
+      text-shadow:0 3px 14px rgba(0,0,0,0.25);
+      margin-bottom:2rem; text-align:center;
+      line-height:1.2;
     }
-
-    @keyframes piscar {
-      0%,100%{opacity:0.95} 50%{opacity:0.3}
+    .jogos {
+      display:flex; flex-direction:column;
+      gap:16px; width:100%; max-width:460px;
     }
-
-    .emoji-item {
-      position:absolute;
-      font-size:95px;
-      line-height:1;
-      transform:translate(-50%,-50%) scale(0);
-      animation:pular 2.5s ease forwards;
-      pointer-events:none;
+    .card {
+      background:rgba(255,255,255,0.2);
+      border:3px solid rgba(255,255,255,0.42);
+      border-radius:26px; padding:1.4rem 1.6rem;
+      display:flex; align-items:center; gap:1.2rem;
+      text-decoration:none; color:white;
+      transition:transform 0.12s, background 0.12s;
+      -webkit-tap-highlight-color:transparent;
     }
-
-    .emoji-item.coruja { font-size:120px; }
-
-    @keyframes pular {
-      0%   { transform:translate(-50%,-50%) scale(0) rotate(-15deg); opacity:1; }
-      25%  { transform:translate(-50%,-65%) scale(1.5) rotate(8deg);  opacity:1; }
-      45%  { transform:translate(-50%,-50%) scale(1)   rotate(-3deg); opacity:1; }
-      60%  { transform:translate(-50%,-55%) scale(1.1) rotate(2deg);  opacity:1; }
-      75%  { transform:translate(-50%,-50%) scale(1)   rotate(0);     opacity:1; }
-      88%  { transform:translate(-50%,-50%) scale(1)   rotate(0);     opacity:0.8; }
-      100% { transform:translate(-50%,-90%) scale(0.6) rotate(0);     opacity:0; }
+    .card:active {
+      transform:scale(0.95);
+      background:rgba(255,255,255,0.3);
     }
+    .card-icon { font-size:3rem; line-height:1; flex-shrink:0; }
+    .card-info h2 { font-size:1.3rem; margin-bottom:0.25rem; }
+    .card-info p  { font-size:0.88rem; opacity:0.82; font-weight:normal; }
   </style>
 </head>
 <body>
+  <h1>🎮 Jogos da Olívia</h1>
+  <div class="jogos">
 
-  <p class="dica" id="dica">Toque na tela! ✨</p>
+    <a href="coruja.html" class="card">
+      <span class="card-icon">🦉</span>
+      <div class="card-info">
+        <h2>Toque e Apareça</h2>
+        <p>Toque na tela e veja bichinhos e frutas aparecerem!</p>
+      </div>
+    </a>
 
-  <script>
-    const animais = ['🐶','🐱','🐸','🐮','🐷','🦊','🐻','🐧','🦋',
-                     '🐘','🦁','🐰','🐼','🐔','🦆','🐴','🐹','🐨'];
-    const frutas  = ['🍎','🍌','🍓','🍇','🍊','🍋','🍉','🍑','🍒',
-                     '🍍','🥭','🍈','🫐','🍏','🍄'];
+    <a href="livro.html" class="card">
+      <span class="card-icon">📖</span>
+      <div class="card-info">
+        <h2>Livro de Figuras</h2>
+        <p>Aprenda palavras em inglês com animais e objetos!</p>
+      </div>
+    </a>
 
-    // Coruja aparece 4x mais que os outros
-    const pool = ['🦉','🦉','🦉','🦉', ...animais, ...frutas];
+    <a href="cores.html" class="card">
+      <span class="card-icon">🎨</span>
+      <div class="card-info">
+        <h2>Jogo das Cores</h2>
+        <p>Pinte com os dedos e crie desenhos coloridos!</p>
+      </div>
+    </a>
 
-    const fundos = [
-      ['135deg','#a8edea','#fed6e3'],
-      ['160deg','#ffecd2','#fcb69f'],
-      ['120deg','#a1c4fd','#c2e9fb'],
-      ['45deg', '#d4fc79','#96e6a1'],
-      ['200deg','#fbc2eb','#a6c1ee'],
-      ['80deg', '#fddb92','#d1fdff'],
-      ['155deg','#f6d365','#fda085'],
-      ['30deg', '#84fab0','#8fd3f4'],
-      ['100deg','#fccb90','#d57eeb'],
-      ['170deg','#c2ffd8','#fbd786'],
-    ];
-    let fundoIdx = 0;
-
-    const audio = new (window.AudioContext || window.webkitAudioContext)();
-    const escala = [523.25, 587.33, 659.25, 783.99, 880.00, 1046.50, 1174.66];
-
-    function tocarNota(coruja) {
-      if (audio.state === 'suspended') audio.resume();
-      const freq = coruja ? 880 : escala[Math.floor(Math.random() * escala.length)];
-      const dur  = coruja ? 1.0 : 0.65;
-
-      [1, 1.5].forEach((mult, i) => {
-        const osc  = audio.createOscillator();
-        const gain = audio.createGain();
-        osc.connect(gain);
-        gain.connect(audio.destination);
-        osc.type = 'sine';
-        osc.frequency.value = freq * mult;
-        gain.gain.setValueAtTime(0.25 / (i + 1), audio.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + dur);
-        osc.start();
-        osc.stop(audio.currentTime + dur);
-      });
-
-      if (coruja) {
-        setTimeout(() => {
-          const osc  = audio.createOscillator();
-          const gain = audio.createGain();
-          osc.connect(gain); gain.connect(audio.destination);
-          osc.type = 'sine';
-          osc.frequency.value = 660;
-          gain.gain.setValueAtTime(0.2, audio.currentTime);
-          gain.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.7);
-          osc.start(); osc.stop(audio.currentTime + 0.7);
-        }, 280);
-      }
-    }
-
-    function mudarFundo() {
-      fundoIdx = (fundoIdx + 1) % fundos.length;
-      const [ang, c1, c2] = fundos[fundoIdx];
-      document.body.style.background = `linear-gradient(${ang}, ${c1}, ${c2})`;
-    }
-
-    let primeiraToque = true;
-
-    function criar(x, y) {
-      if (audio.state === 'suspended') audio.resume();
-
-      if (primeiraToque) {
-        document.getElementById('dica').style.opacity = '0';
-        primeiraToque = false;
-      }
-
-      const escolha  = pool[Math.floor(Math.random() * pool.length)];
-      const ehCoruja = escolha === '🦉';
-
-      const el = document.createElement('div');
-      el.className = 'emoji-item' + (ehCoruja ? ' coruja' : '');
-      el.textContent = escolha;
-      el.style.left = x + 'px';
-      el.style.top  = y + 'px';
-      document.body.appendChild(el);
-
-      tocarNota(ehCoruja);
-      mudarFundo();
-
-      el.addEventListener('animationend', () => el.remove());
-    }
-
-    document.addEventListener('touchstart', e => {
-      e.preventDefault();
-      for (const t of e.changedTouches) criar(t.clientX, t.clientY);
-    }, { passive: false });
-
-    document.addEventListener('mousedown', e => criar(e.clientX, e.clientY));
-  </script>
+  </div>
 </body>
 </html>

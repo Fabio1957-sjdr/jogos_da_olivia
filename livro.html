@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>Livro de Figuras</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body {
+      width:100vw; height:100vh; overflow:hidden;
+      background:linear-gradient(135deg,#a1c4fd,#c2e9fb);
+      transition:background 0.5s ease;
+      -webkit-tap-highlight-color:transparent;
+      font-family:'Arial Rounded MT Bold',Arial,sans-serif;
+    }
+    .btn-home {
+      position:fixed; top:14px; left:14px; z-index:100;
+      background:rgba(255,255,255,0.35); border:2px solid rgba(255,255,255,0.6);
+      border-radius:12px; padding:0.35rem 0.8rem;
+      color:white; font-size:1.2rem; text-decoration:none;
+    }
+    .titulo {
+      position:fixed; top:0; left:0; width:100%; z-index:90; pointer-events:none;
+      padding:16px 70px 0; text-align:center;
+      font-size:1.25rem; color:rgba(255,255,255,0.97);
+      text-shadow:0 2px 8px rgba(0,0,0,0.2);
+    }
+    .grade {
+      position:absolute; inset:0;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-template-rows:1fr 1fr;
+      padding:62px 14px 72px;
+      gap:12px;
+    }
+    .card {
+      background:rgba(255,255,255,0.42);
+      border:3px solid rgba(255,255,255,0.72);
+      border-radius:22px;
+      display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      cursor:pointer;
+      user-select:none; -webkit-user-select:none;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .card-emoji {
+      font-size:13vmin; line-height:1; display:block;
+    }
+    .card-emoji.pula {
+      animation:pularEmoji 0.65s cubic-bezier(.36,.07,.19,.97);
+    }
+    @keyframes pularEmoji {
+      0%   { transform:scale(1)    rotate(0deg)  }
+      18%  { transform:scale(1.45) rotate(-10deg) }
+      36%  { transform:scale(1.22) rotate(7deg)  }
+      55%  { transform:scale(1.35) rotate(-4deg) }
+      75%  { transform:scale(1.15) rotate(1deg)  }
+      100% { transform:scale(1)    rotate(0deg)  }
+    }
+    .card-label {
+      margin-top:8px;
+      font-size:clamp(0.85rem,2.8vw,1.15rem);
+      color:rgba(70,50,30,0.88); letter-spacing:0.04em;
+    }
+    .nav {
+      position:fixed; bottom:14px; left:0; width:100%; z-index:100;
+      display:flex; align-items:center; justify-content:center; gap:16px;
+    }
+    .btn-nav {
+      background:rgba(255,255,255,0.42); border:2px solid rgba(255,255,255,0.7);
+      border-radius:50%; width:48px; height:48px; font-size:1.3rem;
+      color:rgba(70,50,30,0.85); display:flex; align-items:center; justify-content:center;
+      cursor:pointer; -webkit-tap-highlight-color:transparent;
+    }
+    .btn-nav:disabled { opacity:0.15; pointer-events:none; }
+    .dots { display:flex; gap:7px; align-items:center; }
+    .dot {
+      width:9px; height:9px; border-radius:50%;
+      background:rgba(255,255,255,0.45); transition:all 0.3s;
+    }
+    .dot.ativo { background:rgba(255,255,255,0.97); transform:scale(1.3); }
+  </style>
+</head>
+<body>
+  <a href="index.html" class="btn-home">🏠</a>
+  <div class="titulo" id="titulo"></div>
+  <div class="grade" id="grade"></div>
+  <nav class="nav">
+    <button class="btn-nav" id="btnAnt"  onclick="ir(-1)">◀</button>
+    <div class="dots" id="dots"></div>
+    <button class="btn-nav" id="btnProx" onclick="ir(1)">▶</button>
+  </nav>
+
+  <script>
+    const paginas = [
+      { t:'🐄 Farm Animals', f:['160deg','#ffecd2','#fcb69f'],
+        i:[{e:'🐮',l:'Cow'},{e:'🐷',l:'Pig'},{e:'🐑',l:'Sheep'},{e:'🐓',l:'Rooster'}] },
+      { t:'🐶 Pets', f:['120deg','#a1c4fd','#c2e9fb'],
+        i:[{e:'🐶',l:'Dog'},{e:'🐱',l:'Cat'},{e:'🐹',l:'Hamster'},{e:'🐰',l:'Rabbit'}] },
+      { t:'🦁 Wild Animals', f:['45deg','#d4fc79','#96e6a1'],
+        i:[{e:'🦁',l:'Lion'},{e:'🐘',l:'Elephant'},{e:'🦒',l:'Giraffe'},{e:'🦓',l:'Zebra'}] },
+      { t:'🦉 Amazing Animals', f:['200deg','#fbc2eb','#a6c1ee'],
+        i:[{e:'🦉',l:'Owl'},{e:'🦋',l:'Butterfly'},{e:'🐸',l:'Frog'},{e:'🐧',l:'Penguin'}] },
+      { t:'🏠 My Home', f:['80deg','#fddb92','#d1fdff'],
+        i:[{e:'🛏️',l:'Bed'},{e:'🚪',l:'Door'},{e:'🪑',l:'Chair'},{e:'🛁',l:'Bathtub'}] },
+      { t:'🍽️ Kitchen', f:['155deg','#f6d365','#fda085'],
+        i:[{e:'🍳',l:'Pan'},{e:'🥄',l:'Spoon'},{e:'🍴',l:'Fork'},{e:'🥣',l:'Bowl'}] },
+      { t:'🍎 Food', f:['30deg','#84fab0','#8fd3f4'],
+        i:[{e:'🍎',l:'Apple'},{e:'🍌',l:'Banana'},{e:'🥕',l:'Carrot'},{e:'🍞',l:'Bread'}] },
+      { t:'🧸 Toys', f:['100deg','#fccb90','#d57eeb'],
+        i:[{e:'🧸',l:'Teddy Bear'},{e:'⚽',l:'Ball'},{e:'🎈',l:'Balloon'},{e:'🎨',l:'Paints'}] },
+      { t:'🚗 Vehicles', f:['170deg','#c2ffd8','#fbd786'],
+        i:[{e:'🚗',l:'Car'},{e:'✈️',l:'Airplane'},{e:'🚂',l:'Train'},{e:'🚢',l:'Ship'}] },
+    ];
+
+    let pg = 0;
+    const audio = new (window.AudioContext || window.webkitAudioContext)();
+    const escala = [523.25, 659.25, 783.99, 880, 1046.5, 1174.66, 1318.51];
+
+    function som(coruja) {
+      if (audio.state === 'suspended') audio.resume();
+      const f = coruja ? 880 : escala[Math.floor(Math.random() * escala.length)];
+      const d = coruja ? 1.0 : 0.5;
+      [1, 1.5].forEach((m, i) => {
+        const o = audio.createOscillator(), g = audio.createGain();
+        o.connect(g); g.connect(audio.destination);
+        o.type = 'sine'; o.frequency.value = f * m;
+        g.gain.setValueAtTime(0.25 / (i + 1), audio.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + d);
+        o.start(); o.stop(audio.currentTime + d);
+      });
+      if (coruja) setTimeout(() => {
+        const o = audio.createOscillator(), g = audio.createGain();
+        o.connect(g); g.connect(audio.destination);
+        o.type = 'sine'; o.frequency.value = 660;
+        g.gain.setValueAtTime(0.2, audio.currentTime);
+        g.gain.exponentialRampToValueAtTime(0.001, audio.currentTime + 0.7);
+        o.start(); o.stop(audio.currentTime + 0.7);
+      }, 280);
+    }
+
+    function render() {
+      const p = paginas[pg];
+      const [ang, c1, c2] = p.f;
+      document.body.style.background = `linear-gradient(${ang},${c1},${c2})`;
+      document.getElementById('titulo').textContent = p.t;
+
+      const grade = document.getElementById('grade');
+      grade.innerHTML = '';
+      p.i.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        const es = document.createElement('span');
+        es.className = 'card-emoji'; es.textContent = item.e;
+        const ls = document.createElement('span');
+        ls.className = 'card-label'; ls.textContent = item.l;
+        card.append(es, ls);
+
+        function animar() {
+          if (audio.state === 'suspended') audio.resume();
+          som(item.e === '🦉');
+          es.classList.remove('pula');
+          void es.offsetWidth;   /* força reflow para reiniciar a animação */
+          es.classList.add('pula');
+          es.addEventListener('animationend', () => es.classList.remove('pula'), { once: true });
+        }
+        card.addEventListener('touchstart', e => { e.preventDefault(); animar(); }, { passive: false });
+        card.addEventListener('click', animar);
+        grade.appendChild(card);
+      });
+
+      /* indicadores de página */
+      const dots = document.getElementById('dots');
+      dots.innerHTML = '';
+      paginas.forEach((_, i) => {
+        const d = document.createElement('div');
+        d.className = 'dot' + (i === pg ? ' ativo' : '');
+        dots.appendChild(d);
+      });
+      document.getElementById('btnAnt').disabled  = pg === 0;
+      document.getElementById('btnProx').disabled = pg === paginas.length - 1;
+    }
+
+    function ir(dir) {
+      const n = pg + dir;
+      if (n < 0 || n >= paginas.length) return;
+      pg = n; render();
+    }
+
+    render();
+  </script>
+</body>
+</html>
